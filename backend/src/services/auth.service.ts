@@ -1,35 +1,17 @@
-import { findUserByManv, User } from "../models/nvien.model";
+import { findUserByManv } from "../models/nvien.model";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/jwt";
+import { User } from "../types/nvien.interface";
 
 export interface AuthResponse {
   token: string;
-  user: {
-    manv: number;
-    tennv: string;
-    mucdo: number;
-  };
+  user: Pick<User, "manv" | "tennv" | "mucdo" | "ketoan">;
 }
 
 export async function login(g_mabc: string, manv: number, mkhau: string): Promise<AuthResponse> {
   const user = await findUserByManv(g_mabc, manv);
-  if (!user) {
-    const error: any = new Error("Mã nhân viên không tồn tại!");
-    error.code = "USER_NOT_FOUND";
-    throw error;
-  }
-  if (user.mkhau !== mkhau) {
-    const error: any = new Error("Mật khẩu không chính xác!");
-    error.code = "WRONG_PASSWORD";
-    throw error;
-  }
-  const token = jwt.sign(
-    { manv: user.manv, mucdo: user.mucdo, g_mabc },
-    JWT_SECRET,
-    { expiresIn: "12h" }
-  );
-  return {
-    token,
-    user: { manv: user.manv, tennv: user.tennv, mucdo: user.mucdo }
-  };
+  if (!user) throw { code: "USER_NOT_FOUND", msg: "Mã nhân viên không tồn tại!" };
+  if (user.mkhau !== mkhau) throw { code: "WRONG_PASSWORD", msg: "Mật khẩu không chính xác!" };
+  const token = jwt.sign({ manv: user.manv, mucdo: user.mucdo, ketoan: user.ketoan, g_mabc }, JWT_SECRET, { expiresIn: "12h" });
+  return { token, user: { manv: user.manv, tennv: user.tennv, mucdo: user.mucdo, ketoan: user.ketoan } };
 }

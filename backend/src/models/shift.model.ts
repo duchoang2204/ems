@@ -1,18 +1,6 @@
 import { getConnection } from "../config/dbConfig";
 import { normalizeDbKeysCamel } from "../utils/normalizeDbKeysCamel";
-
-export interface Shift {
-  ca: number;
-  tenca: string;
-  ngayBatDau: number;
-  gioBatDau: number;
-  ngayKetThuc: number;
-  gioKetThuc: number;
-  active: number;
-  nvXacNhanCa: string;
-  mabcKt: number;
-  [key: string]: any;
-}
+import { Shift } from "../types/shift.interface";
 
 export async function getActiveShift(g_mabc: string): Promise<Shift | undefined> {
   const conn = await getConnection(g_mabc);
@@ -21,5 +9,7 @@ export async function getActiveShift(g_mabc: string): Promise<Shift | undefined>
     `SELECT * FROM ${tableName} WHERE active = 1 ORDER BY ngaybatdau DESC FETCH FIRST 1 ROWS ONLY`
   );
   await conn.close();
-  return result.rows?.[0] ? normalizeDbKeysCamel<Shift>(result.rows[0]) : undefined;
+  const row = result.rows?.[0] ? normalizeDbKeysCamel<Shift>(result.rows[0]) : undefined;
+  if (row && row.dateLog) row.dateLog = new Date(row.dateLog).toISOString();
+  return row;
 }
