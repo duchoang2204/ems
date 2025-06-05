@@ -1,0 +1,19 @@
+# Ignore node_modules cho cả backend và frontend
+backend/node_modules/
+frontend/node_modules/
+
+# Ignore dist/build cho cả backend và frontend
+backend/dist/
+frontend/dist/
+backend/build/
+frontend/build/
+
+# Ignore env
+backend/.env
+frontend/.env
+
+# Ignore lock/log/editor
+*.log
+.DS_Store
+.vscode/
+.idea/
