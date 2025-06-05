@@ -2,7 +2,7 @@ import { findUserByManv, User } from "../models/nvien.model";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/jwt";
 
-interface AuthResponse {
+export interface AuthResponse {
   token: string;
   user: {
     manv: number;
@@ -10,37 +10,26 @@ interface AuthResponse {
     mucdo: number;
   };
 }
+
 export async function login(g_mabc: string, manv: number, mkhau: string): Promise<AuthResponse> {
-  console.log(`[LOGIN] Đang kiểm tra đăng nhập - MANV: ${manv}, G_MABC: ${g_mabc}`);
-  
-  // Kiểm tra tài khoản
   const user = await findUserByManv(g_mabc, manv);
   if (!user) {
-    console.log(`[LOGIN] ❌ Không tìm thấy nhân viên ${manv}`);
-    throw new Error("Tài khoản không tồn tại trong hệ thống!");
+    const error: any = new Error("Mã nhân viên không tồn tại!");
+    error.code = "USER_NOT_FOUND";
+    throw error;
   }
-  
-  // Kiểm tra mật khẩu
-  if (user.MKHAU !== mkhau) {
-    console.log(`[LOGIN] ❌ Sai mật khẩu - MANV: ${manv}`);
-    throw new Error("Mật khẩu không chính xác!");
+  if (user.mkhau !== mkhau) {
+    const error: any = new Error("Mật khẩu không chính xác!");
+    error.code = "WRONG_PASSWORD";
+    throw error;
   }
-
-   // Tạo token và trả về thông tin
-   const token = jwt.sign(
-    { manv: user.MANV, mucdo: user.MUCDO, g_mabc },
+  const token = jwt.sign(
+    { manv: user.manv, mucdo: user.mucdo, g_mabc },
     JWT_SECRET,
     { expiresIn: "12h" }
   );
-  
-  console.log(`[LOGIN] ✅ Đăng nhập thành công - MANV: ${manv}, Tên: ${user.TENNV}, Mức độ: ${user.MUCDO}`);
-
-  return { 
-    token, 
-    user: { 
-      manv: user.MANV, 
-      tennv: user.TENNV, 
-      mucdo: user.MUCDO 
-    } 
+  return {
+    token,
+    user: { manv: user.manv, tennv: user.tennv, mucdo: user.mucdo }
   };
 }

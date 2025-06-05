@@ -6,7 +6,7 @@ export interface User {
   tennv: string;
   mkhau: string;
   mucdo: number;
-  [key: string]: any;
+  // ... thêm trường nếu có
 }
 
 export async function findUserByManv(g_mabc: string, manv: number): Promise<User | undefined> {
@@ -14,9 +14,8 @@ export async function findUserByManv(g_mabc: string, manv: number): Promise<User
   const result = await conn.execute(
     "SELECT MANV, TENNV, MKHAU, MUCDO FROM NVIEN WHERE MANV = :manv",
     { manv },
-    { outFormat: 4002 } // hoặc: oracledb.OUT_FORMAT_OBJECT
+    { outFormat: 4002 }
   );
   await conn.close();
-  // Chuẩn hóa sang camelCase
   return result.rows?.[0] ? normalizeDbKeysCamel<User>(result.rows[0]) : undefined;
 }
