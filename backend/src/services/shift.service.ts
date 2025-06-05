@@ -1,4 +1,5 @@
-import { getActiveShift, Shift } from "../models/shift.model";
+import { getActiveShift } from "../models/shift.model";
+import { Shift } from "../types/shift.interface";
 
 export interface CheckShiftResult {
   ok: boolean;
