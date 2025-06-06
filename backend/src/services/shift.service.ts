@@ -1,3 +1,4 @@
+
 import { getActiveShift } from "../models/shift.model";
 import { Shift } from "../types/shift.interface";
 
@@ -16,6 +17,7 @@ export async function checkShiftValid(
   if (!shift) {
     return { ok: false, msg: "Ca hiện tại chưa được thiết lập!" };
   }
+
   const {
     gioBatDau,
     ngayBatDau,
@@ -27,19 +29,20 @@ export async function checkShiftValid(
   if (active !== 1) {
     return { ok: false, msg: "Ca hiện tại chưa active!" };
   }
+
   if (yyyymmdd < ngayBatDau || yyyymmdd > ngayKetThuc) {
     return { ok: false, msg: "Ngoài ngày làm việc của ca!" };
   }
-  // Ca ngày bình thường
+
   if (
-    (gioBatDau < gioKetThuc && hhmm >= gioBatDau && hhmm < gioKetThuc) ||
-    // Ca đêm: giờ bắt đầu > giờ kết thúc (qua ngày mới)
-    (gioBatDau > gioKetThuc && (hhmm >= gioBatDau || hhmm < gioKetThuc))
+    (yyyymmdd === ngayBatDau && hhmm < gioBatDau) ||
+    (yyyymmdd === ngayKetThuc && hhmm >= gioKetThuc)
   ) {
-    return { ok: true, shift };
+    return {
+      ok: false,
+      msg: "Giờ làm việc của ca hiện tại đã hết hoặc chưa tới!"
+    };
   }
-  return {
-    ok: false,
-    msg: "Giờ làm việc của ca hiện tại đã hết, yêu cầu nới rộng thời gian làm việc hoặc tạo ca mới!"
-  };
+
+  return { ok: true, shift };
 }

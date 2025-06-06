@@ -9,6 +9,7 @@ export async function findUserByManv(g_mabc: string, manv: number): Promise<User
     { manv },
     { outFormat: 4002 }
   );
+  console.log("🔍 DB result.rows:", result.rows); // Thêm log để xem có trả rows hay không
   await conn.close();
   return result.rows?.[0] ? normalizeDbKeysCamel<User>(result.rows[0]) : undefined;
 }

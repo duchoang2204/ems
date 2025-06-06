@@ -10,7 +10,9 @@ export interface AuthResponse {
 
 export async function login(g_mabc: string, manv: number, mkhau: string): Promise<AuthResponse> {
   const user = await findUserByManv(g_mabc, manv);
+  console.log("🔍 User found:", user); // Thêm log
   if (!user) throw { code: "USER_NOT_FOUND", msg: "Mã nhân viên không tồn tại!" };
+  console.log("🔍 User mkhau:", user.mkhau); // Thêm log
   if (user.mkhau !== mkhau) throw { code: "WRONG_PASSWORD", msg: "Mật khẩu không chính xác!" };
   const token = jwt.sign({ manv: user.manv, mucdo: user.mucdo, ketoan: user.ketoan, g_mabc }, JWT_SECRET, { expiresIn: "12h" });
   return { token, user: { manv: user.manv, tennv: user.tennv, mucdo: user.mucdo, ketoan: user.ketoan } };

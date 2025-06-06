@@ -5,7 +5,7 @@ const useInactivityLogout = (timeout = 10 * 60 * 1000) => {
   const { logout } = useAuth();
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: number;
 
     const reset = () => {
       clearTimeout(timer);

@@ -1,8 +1,0 @@
-.dashboard-layout {
-  display: flex;
-  height: 100vh;
-}
-.dashboard-content {
-  display: flex;
-  flex: 1;
-}

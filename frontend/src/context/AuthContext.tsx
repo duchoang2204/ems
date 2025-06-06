@@ -1,13 +1,12 @@
-// src/context/AuthContext.tsx
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { logoutAPI } from '../api/authApi'; // ✅ API có sẵn của bạn
 
 type User = {
   username: string;
   role: number;
   token: string;
   ca: string;
+  ngaykt: number;
   db: 'HNLT' | 'HNNT';
   mabc: string;
 };
@@ -37,32 +36,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  const login = (userData: User) => {
+  const login = useCallback((userData: User) => {
     sessionStorage.setItem('user', JSON.stringify(userData));
     setUser(userData);
-    navigate('/'); // quay về dashboard mặc định
-  };
+    setTimeout(() => {
+      navigate("/");
+    }, 0);
+  }, [navigate]);
 
-  const logout = async () => {
-    try {
-      await logoutAPI(); // Gọi API logout của bạn (nếu cần làm gì ở backend)
-    } catch (err) {
-      console.warn('Logout API failed (có thể đã hết phiên)', err);
-    }
-    sessionStorage.removeItem('user');
+  const logout = useCallback(() => {
+    sessionStorage.clear();
     setUser(null);
-    navigate('/login');
-  };
+    navigate("/login");
+  }, [navigate]);
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        login,
-        logout,
-        isAuthenticated: !!user,
-      }}
-    >
+    <AuthContext.Provider value={{ 
+      user, 
+      login, 
+      logout, 
+      isAuthenticated: !!user 
+    }}>
       {children}
     </AuthContext.Provider>
   );

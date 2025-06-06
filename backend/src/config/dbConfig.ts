@@ -36,6 +36,7 @@ const dbs: DbConfigs = {
 
 export async function getConnection(g_mabc: string) {
   const dbConf = dbs[g_mabc];
+  console.log("🔍 DB config:", dbConf);
   if (!dbConf) throw new Error("Mã cơ sở không hợp lệ!");
   
   // Kiểm tra thông tin kết nối
