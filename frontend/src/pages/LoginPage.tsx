@@ -14,7 +14,6 @@ import {
   useTheme,
   useMediaQuery
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import { login as loginAPI } from "../api/authApi";
 import { checkShift } from "../api/shiftApi";
 import { useAuth } from "../context/AuthContext";
@@ -26,7 +25,6 @@ import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/Lock";
 
 const LoginPage: React.FC = () => {
-  const navigate = useNavigate();
   const auth = useAuth();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -54,11 +52,12 @@ const LoginPage: React.FC = () => {
 
     try {
       const res = await loginAPI(g_mabc, Number(manv), mkhau);
-      console.log("Login API res:", res);
+      console.log("Login API full response:", res);
+      console.log("Login API data:", res.data);
       const userData = res.data;
 
       const shiftRes = await checkShift(g_mabc);
-      console.log("Check shift res:", shiftRes);
+      console.log("Check shift response:", shiftRes);
       if (!shiftRes.ok) {
         setError(shiftRes.msg || "Ca làm việc hiện tại không hợp lệ.");
         setLoading(false);

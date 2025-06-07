@@ -56,7 +56,7 @@ export default function SettingsDialog({ open, onClose }: SettingsDialogProps) {
 
   const handleCheckAdmin = async () => {
     // TODO: Thực tế nên gọi API kiểm tra admin mucdo=9!
-    if (admin === "admin" && password === "adminpw") {
+    if (admin === "2204" && password === "22041985") {
       setStep(1);
       setError("");
     } else {

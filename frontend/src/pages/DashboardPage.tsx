@@ -17,7 +17,7 @@ import StorageIcon from "@mui/icons-material/Storage";
 
 const DashboardPage = () => {
   const theme = useTheme();
-  const { user } = useAuth();
+  const { userInfo, shiftInfo } = useAuth();
 
   const getDbName = (mabc: string) => {
     switch (mabc) {
@@ -32,24 +32,24 @@ const DashboardPage = () => {
       title: "Thông tin người dùng",
       icon: <PeopleIcon fontSize="large" color="primary" />,
       content: [
-        { label: "Tên người dùng", value: user?.username },
-        { label: "Vai trò", value: user?.role === 9 ? "Admin" : "Người dùng" }
+        { label: "Tên người dùng", value: userInfo?.username },
+        { label: "Vai trò", value: userInfo?.role === 9 ? "Admin" : "Người dùng" }
       ]
     },
     {
       title: "Ca làm việc",
       icon: <AccessTimeIcon fontSize="large" color="primary" />,
       content: [
-        { label: "Ca hiện tại", value: user?.ca },
-        { label: "Ngày", value: user?.ngaykt?.toString() }
+        { label: "Ca hiện tại", value: shiftInfo?.ca },
+        { label: "Ngày", value: shiftInfo?.ngaykt }
       ]
     },
     {
       title: "Trung Tâm Khai Thác Trong Nước",
       icon: <StorageIcon fontSize="large" color="primary" />,
       content: [
-        { label: "Database", value: user?.db },
-        { label: "Đơn vị", value: getDbName(user?.mabc || "") }
+        { label: "Database", value: shiftInfo?.db },
+        { label: "Đơn vị", value: getDbName(userInfo?.mabc || "") }
       ]
     }
   ];
