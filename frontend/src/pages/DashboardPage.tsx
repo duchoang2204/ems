@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -14,10 +14,19 @@ import { useAuth } from "../context/AuthContext";
 import PeopleIcon from "@mui/icons-material/People";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import StorageIcon from "@mui/icons-material/Storage";
+import { usePageTitle } from '../hooks/usePageTitle';
 
-const DashboardPage = () => {
+const DashboardPage: React.FC = () => {
   const theme = useTheme();
   const { userInfo, shiftInfo } = useAuth();
+  const { setPageTitle, resetPageTitle } = usePageTitle();
+
+  useEffect(() => {
+    setPageTitle("Trang chủ");
+    return () => {
+      resetPageTitle();
+    };
+  }, [setPageTitle, resetPageTitle]);
 
   const getDbName = (mabc: string) => {
     switch (mabc) {

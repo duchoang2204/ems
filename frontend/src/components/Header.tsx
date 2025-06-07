@@ -19,9 +19,11 @@ import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import InfoIcon from "@mui/icons-material/Info";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 export default function Header() {
   const { userInfo, logout } = useAuth();
+  const { pageTitle } = usePageTitle();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -59,9 +61,21 @@ export default function Header() {
       }}
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Typography variant="h6" noWrap>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Typography variant="h6" noWrap>
             Hệ thống EMS
-        </Typography>
+          </Typography>
+          {pageTitle && (
+            <>
+              <Typography variant="h6" sx={{ color: "grey.300" }}>
+                |
+              </Typography>
+              <Typography variant="h6" noWrap>
+                {pageTitle}
+              </Typography>
+            </>
+          )}
+        </Box>
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <Typography variant="body2" color="inherit" sx={{ mr: 2 }}>

@@ -1,9 +1,9 @@
-import { getConnection } from "../config/dbConfig";
+import { getConnectionByMaBC } from "../config/db.config";
 import { normalizeDbKeysCamel } from "../utils/normalizeDbKeysCamel";
 import { Shift } from "../types/shift.interface";
 
 export async function getActiveShift(g_mabc: string): Promise<Shift | undefined> {
-  const conn = await getConnection(g_mabc);
+  const conn = await getConnectionByMaBC(g_mabc);
   const tableName = g_mabc === "100916" ? "ca_todong" : "ca_tomo";
   const result = await conn.execute(
     `SELECT * FROM ${tableName} WHERE active = 1 ORDER BY ngaybatdau DESC FETCH FIRST 1 ROWS ONLY`

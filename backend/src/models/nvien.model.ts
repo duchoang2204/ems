@@ -1,9 +1,9 @@
-import { getConnection } from "../config/dbConfig";
+import { getConnectionByMaBC } from "../config/db.config";
 import { normalizeDbKeysCamel } from "../utils/normalizeDbKeysCamel";
 import { User } from "../types/nvien.interface";
 
 export async function findUserByManv(g_mabc: string, manv: number): Promise<User | undefined> {
-  const conn = await getConnection(g_mabc);
+  const conn = await getConnectionByMaBC(g_mabc);
   const result = await conn.execute(
     "SELECT MANV, TENNV, MKHAU, MUCDO, KETOAN FROM NVIEN WHERE MANV = :manv",
     { manv },

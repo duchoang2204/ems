@@ -11,10 +11,13 @@ import {
   IconButton,
   useTheme
 } from "@mui/material";
-import DashboardIcon from "@mui/icons-material/Dashboard";
+import HomeIcon from "@mui/icons-material/Home";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
+import PersonIcon from "@mui/icons-material/Person";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import SettingsIcon from "@mui/icons-material/Settings";
-import PeopleIcon from "@mui/icons-material/People";
-import TimelineIcon from "@mui/icons-material/Timeline";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -24,11 +27,13 @@ const DRAWER_WIDTH = 240;
 const MINI_DRAWER_WIDTH = 65;
 
 const menu = [
-  { text: "Dashboard", icon: <DashboardIcon />, path: "/" },
-  { text: "Ca làm việc", icon: <TimelineIcon />, path: "/shift" },
-  { text: "Người dùng", icon: <PeopleIcon />, path: "/users" },
-  { text: "Cài đặt", icon: <SettingsIcon />, path: "/settings" },
-  // Tuỳ theo phân quyền, render thêm/bớt menu
+  { text: "Trang chủ", icon: <HomeIcon />, path: "/" },
+  { text: "Khai thác", icon: <InventoryIcon />, path: "/exploitation" },
+  { text: "Vận chuyển Phát hàng", icon: <LocalShippingIcon />, path: "/delivery" },
+  { text: "Giao dịch", icon: <PointOfSaleIcon />, path: "/transaction" },
+  { text: "Bưu tá", icon: <PersonIcon />, path: "/postman" },
+  { text: "Quản trị hệ thống", icon: <AdminPanelSettingsIcon />, path: "/admin" },
+  { text: "Cài đặt", icon: <SettingsIcon />, path: "/settings" }
 ];
 
 export default function Sidebar() {

@@ -41,6 +41,7 @@ export default function SettingsDialog({ open, onClose }: SettingsDialogProps) {
   const [gMabc, setGMabc] = useState(localStorage.getItem("g_mabc") || "");
   const [ipLan, setIpLan] = useState(localStorage.getItem("ip_lan") || "");
   const [printerName, setPrinterName] = useState(localStorage.getItem("printer_name") || "");
+  const [searchDays, setSearchDays] = useState(localStorage.getItem("e1_search_days") || "7");
   const [apiUrl, setApiUrl] = useState(localStorage.getItem("api_url") || "");
 
   useEffect(() => {
@@ -97,6 +98,7 @@ export default function SettingsDialog({ open, onClose }: SettingsDialogProps) {
     localStorage.setItem("g_mabc", gMabc);
     localStorage.setItem("ip_lan", ipLan);
     localStorage.setItem("printer_name", printerName);
+    localStorage.setItem("e1_search_days", searchDays);
     if (apiUrl) localStorage.setItem("api_url", apiUrl);
 
     setError("");
@@ -228,6 +230,14 @@ export default function SettingsDialog({ open, onClose }: SettingsDialogProps) {
                   </InputAdornment>
                 ),
               }}
+            />
+            <TextField
+              label="Số ngày tìm kiếm"
+              fullWidth
+              value={searchDays}
+              onChange={e => setSearchDays(e.target.value)}
+              margin="normal"
+              variant="outlined"
             />
             <TextField
               label="API URL (tùy chọn)"

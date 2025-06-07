@@ -1,26 +1,14 @@
-
 import React from "react";
-import { Routes, Route } from "react-router-dom";
-import LoginPage from "./pages/LoginPage";
-import DashboardPage from "./pages/DashboardPage";
-import ProtectedRoute from "./components/ProtectedRoute";
-import DashboardLayout from "./layout/DashboardLayout";
+import { useRoutes } from "react-router-dom";
+import { routes } from "./routes/routes";
+import { PageTitleProvider } from "./context/PageTitleContext";
 
 const App = () => {
+  const element = useRoutes(routes);
   return (
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <DashboardLayout>
-              <DashboardPage />
-            </DashboardLayout>
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
+    <PageTitleProvider>
+      {element}
+    </PageTitleProvider>
   );
 };
 
