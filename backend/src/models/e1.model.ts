@@ -26,19 +26,21 @@ export class E1Model {
     const { tableName, dbConfig } = this.getTableConfig(mabcNhan);
 
     const sql = `
-      SELECT a.*, ROWNUM rnum
-      FROM (
-        SELECT mae1, TO_CHAR(TO_DATE(ngay, 'YYYYMMDD'), 'DD/MM/YYYY') AS ngay, khoiluong
-        FROM ${tableName}
-        WHERE ngay BETWEEN :fromDate AND :toDate
-          AND mabc_kt = :mabcDong
-          AND mabc = :mabcNhan
-          AND chthu = :chthu
-          AND tuiso = :tuiso
-          AND (:khoiluong IS NULL OR khoiluong = :khoiluong)
-        ORDER BY ngay DESC, mae1
-      ) a
-      WHERE ROWNUM <= :maxRow
+      SELECT * FROM (
+        SELECT a.*, ROWNUM rnum
+        FROM (
+          SELECT mae1, TO_CHAR(TO_DATE(ngay, 'YYYYMMDD'), 'DD/MM/YYYY') AS ngay, khoiluong
+          FROM ${tableName}
+          WHERE ngay BETWEEN :fromDate AND :toDate
+            AND mabc_kt = :mabcDong
+            AND mabc = :mabcNhan
+            AND chthu = :chthu
+            AND tuiso = :tuiso
+            AND (:khoiluong IS NULL OR khoiluong = :khoiluong)
+          ORDER BY ngay DESC, mae1
+        ) a
+        WHERE ROWNUM <= :maxRow
+      ) WHERE rnum > :offset
     `;
 
     const conn = await getDbConnection(dbConfig);
@@ -52,7 +54,8 @@ export class E1Model {
         chthu,
         tuiso,
         khoiluong,
-        maxRow: offset + limit
+        maxRow: offset + limit,
+        offset: offset
       },
       { outFormat: oracledb.OUT_FORMAT_OBJECT }
     );
@@ -71,7 +74,8 @@ export class E1Model {
           chthu,
           tuiso,
           khoiluong,
-          maxRow: offset + limit
+          maxRow: offset + limit,
+          offset: offset
         },
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
       );
