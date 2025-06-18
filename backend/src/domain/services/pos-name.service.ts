@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PosEntity } from '../entities/pos.entity';
+import { PosEntity } from '../../shared/pos/pos.entity';
 
 @Injectable()
 export class PosNameService {

@@ -1,7 +1,7 @@
 // src/infrastructure/repositories/khaiThac/khaiThacVien/sanBayTra/WQuanLyHktvRepositoryOracle.ts
 
 import { WQuanLyHktvRepository } from './WQuanLyHktvRepository';
-import { getOracleConnection } from '../../../../../config/db.config';
+import { getOracleConnection } from '../../../../../../config/database/db.config';
 
 export class WQuanLyHktvRepositoryOracle implements WQuanLyHktvRepository {
   async checkIsXnd(params: {

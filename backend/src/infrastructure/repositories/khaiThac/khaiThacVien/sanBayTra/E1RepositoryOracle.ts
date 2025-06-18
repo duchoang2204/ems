@@ -1,7 +1,7 @@
 // src/infrastructure/repositories/khaiThac/khaiThacVien/sanBayTra/E1RepositoryOracle.ts
 
 import { E1Repository } from './E1Repository';
-import { getOracleConnection } from '../../../../../config/db.config';
+import { getOracleConnection } from '../../../../../../config/database/db.config';
 
 export class E1RepositoryOracle implements E1Repository {
   async insertE1(params: {

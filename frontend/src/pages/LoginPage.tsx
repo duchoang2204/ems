@@ -10,10 +10,10 @@ import {
   CircularProgress,
   IconButton,
   InputAdornment,
-  Tooltip,
-  useTheme,
-  useMediaQuery
-} from "@mui/material";
+  Tooltip
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { login as loginAPI } from "../api/authApi";
 import { checkShift } from "../api/shiftApi";
 import { useAuth } from "../context/AuthContext";
@@ -23,7 +23,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/Lock";
-import type { CheckShiftResponse } from "../api/shiftApi";
+
 
 const LoginPage: React.FC = () => {
   const auth = useAuth();
@@ -47,8 +47,8 @@ const LoginPage: React.FC = () => {
   };
 
   useEffect(() => {
-    console.log('LoginPage JSX render');
-  });
+    console.log('LoginPage mounted');
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,13 +56,19 @@ const LoginPage: React.FC = () => {
     setError(null);
 
     try {
-      const res = await loginAPI(g_mabc, Number(manv), mkhau);
-      const userData = res.data as {
+      // Gọi song song login và check shift
+      const [loginRes, shiftRes] = await Promise.all([
+        loginAPI(g_mabc, Number(manv), mkhau),
+        checkShift(g_mabc)
+      ]);
+
+      // Xử lý kết quả login
+      const userData = loginRes.data as {
         user: { tennv: string; mucdo: number };
         token: string;
       };
 
-      const shiftRes: CheckShiftResponse = await checkShift(g_mabc);
+      // Xử lý kết quả shift
       if (!shiftRes || !shiftRes.ok || !shiftRes.shift) {
         setError(shiftRes?.msg || "Ca làm việc hiện tại không hợp lệ hoặc không có dữ liệu ca.");
         setLoading(false);
@@ -84,7 +90,14 @@ const LoginPage: React.FC = () => {
       });
       console.log('Đã gọi xong auth.login');
     } catch (err: any) {
-      setError(`Lỗi: ${err?.response?.data?.message || err.message || err.toString()}`);
+      // Xác định lỗi là do login hay shift
+      if (err?.response?.data?.code === 'INVALID_CREDENTIALS') {
+        setError('Mã nhân viên hoặc mật khẩu không chính xác!');
+      } else if (err?.response?.data?.msg) {
+        setError(err.response.data.msg);
+      } else {
+        setError(`Lỗi: ${err?.message || err.toString()}`);
+      }
     } finally {
       setLoading(false);
     }

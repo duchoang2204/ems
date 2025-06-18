@@ -4,7 +4,7 @@ import { SearchE1RequestDto } from '../../../application/dto/van-chuyen/SearchE1
 import { SearchE1ResponseDto, E1Info } from '../../../application/dto/van-chuyen/SearchE1ResponseDto';
 import { GetE1DetailsRequestDto } from '../../../application/dto/van-chuyen/GetE1DetailsRequestDto';
 import { GetE1DetailsResponseDto } from '../../../application/dto/van-chuyen/GetE1DetailsResponseDto';
-import { getConnectionByMaBC } from '../../../config/db.config';
+import { getConnectionByMaBC } from '../../config/database/db.config';
 import oracledb from 'oracledb';
 
 interface CountResult {

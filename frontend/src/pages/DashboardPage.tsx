@@ -3,13 +3,13 @@ import {
   Box,
   Typography,
   Paper,
-  useTheme,
   Card,
   CardContent,
   CardHeader,
   Avatar,
   Container
-} from "@mui/material";
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { useAuth } from "../context/AuthContext";
 import PeopleIcon from "@mui/icons-material/People";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";

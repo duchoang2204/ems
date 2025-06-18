@@ -17,9 +17,12 @@
 
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@core/*": ["core/*"],
+      "@config/*": ["config/*"],
+      "@modules/*": ["modules/*"]
     }
   },
-  "include": ["src", "src/types/express"],
+  "include": ["src", "src/core/types/express.d.ts"],
   "exclude": ["node_modules", "dist"]
 }
