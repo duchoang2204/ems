@@ -16,6 +16,9 @@ import BD10Page from '../pages/exploitation/bd10/BD10Page';
 import LapBD10Page from '../pages/exploitation/bd10/LapBD10Page';
 import XacNhanBD10Page from '../pages/exploitation/bd10/XacNhanBD10Page';
 
+// Van chuyen pages
+import DeliveryPage from '../features/van-chuyen/pages/DeliveryPage';
+
 // Accountant/KSV pages
 import AccountantPage from '../pages/exploitation/accountant/AccountantPage';
 import ConfirmArrivalPage from '../pages/exploitation/accountant/ConfirmArrivalPage';
@@ -34,7 +37,6 @@ import BagWrongWeightPage from '../pages/exploitation/reports/BagWrongWeightPage
 import BagReconciliationPage from '../pages/exploitation/reports/BagReconciliationPage';
 
 // Other pages
-import DeliveryPage from '../pages/delivery/DeliveryPage';
 import TransactionPage from '../pages/transaction/TransactionPage';
 import PostmanPage from '../pages/postman/PostmanPage';
 import AdminPage from '../pages/admin/AdminPage';
@@ -95,6 +97,11 @@ export const routes: RouteObject[] = [
         path: 'bd10/confirm-by-bag',
         element: <XacNhanBD10Page />
       },
+      // Van chuyen routes
+      {
+        path: 'van-chuyen',
+        element: <DeliveryPage />
+      },    
       // Accountant/KSV routes
       {
         path: 'accountant',
@@ -150,10 +157,6 @@ export const routes: RouteObject[] = [
         element: <BagReconciliationPage />
       },
       // Other routes
-      {
-        path: 'delivery',
-        element: <DeliveryPage />
-      },
       {
         path: 'transaction',
         element: <TransactionPage />

@@ -47,6 +47,7 @@ const dbConfigMap: { [key: string]: ConnectionAttributes } = {
  */
 export async function getConnectionByMaBC(mabc: string) {
   const dbConfig = dbConfigMap[mabc];
+  console.log('getConnectionByMaBC - mabc:', mabc, '| dbConfig:', dbConfig);
   if (!dbConfig) {
     throw new Error("Mã bưu cục không hợp lệ!");
   }
@@ -57,6 +58,7 @@ export async function getConnectionByMaBC(mabc: string) {
   }
 
   try {
+    console.log('Kết nối DB với user:', dbConfig.user, '| connectString:', dbConfig.connectString);
     return await oracledb.getConnection(dbConfig);
   } catch (err: any) {
     console.error("Lỗi kết nối database:", err.message);

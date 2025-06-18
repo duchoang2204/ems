@@ -1,5 +1,5 @@
 // src/pages/LoginPage.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   TextField,
@@ -23,6 +23,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/Lock";
+import type { CheckShiftResponse } from "../api/shiftApi";
 
 const LoginPage: React.FC = () => {
   const auth = useAuth();
@@ -45,6 +46,10 @@ const LoginPage: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    console.log('LoginPage JSX render');
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -52,33 +57,34 @@ const LoginPage: React.FC = () => {
 
     try {
       const res = await loginAPI(g_mabc, Number(manv), mkhau);
-      console.log("Login API full response:", res);
-      console.log("Login API data:", res.data);
-      const userData = res.data;
+      const userData = res.data as {
+        user: { tennv: string; mucdo: number };
+        token: string;
+      };
 
-      const shiftRes = await checkShift(g_mabc);
-      console.log("Check shift response:", shiftRes);
-      if (!shiftRes.ok) {
-        setError(shiftRes.msg || "Ca làm việc hiện tại không hợp lệ.");
+      const shiftRes: CheckShiftResponse = await checkShift(g_mabc);
+      if (!shiftRes || !shiftRes.ok || !shiftRes.shift) {
+        setError(shiftRes?.msg || "Ca làm việc hiện tại không hợp lệ hoặc không có dữ liệu ca.");
         setLoading(false);
+        console.log('Lỗi ca làm việc:', shiftRes?.msg);
         return;
       }
 
       const dbKey = g_mabc.startsWith("1009") ? "HNLT" : "HNNT";
 
+      console.log('Gọi auth.login với token:', userData.token);
       auth.login({
         username: userData.user.tennv,
         role: userData.user.mucdo,
         token: userData.token,
         ca: shiftRes.shift.ca,
-        ngaykt: shiftRes.shift.ngayBatDau,
+        ngaykt: String(shiftRes.shift.ngayBatDau),
         db: dbKey,
         mabc: g_mabc
       });
-
+      console.log('Đã gọi xong auth.login');
     } catch (err: any) {
-      console.error("Catch block error:", err);
-      setError(`Lỗi: ${err.message || err.toString()}`);
+      setError(`Lỗi: ${err?.response?.data?.message || err.message || err.toString()}`);
     } finally {
       setLoading(false);
     }
@@ -158,6 +164,8 @@ const LoginPage: React.FC = () => {
               fullWidth
               margin="normal"
               variant="outlined"
+              autoComplete="postal-code-manv"
+              name="manv"
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -174,6 +182,8 @@ const LoginPage: React.FC = () => {
               fullWidth
               margin="normal"
               variant="outlined"
+              autoComplete="current-password"
+              name="mkhau"
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">

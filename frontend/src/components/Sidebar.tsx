@@ -29,7 +29,7 @@ const MINI_DRAWER_WIDTH = 65;
 const menu = [
   { text: "Trang chủ", icon: <HomeIcon />, path: "/" },
   { text: "Khai thác", icon: <InventoryIcon />, path: "/exploitation" },
-  { text: "Vận chuyển Phát hàng", icon: <LocalShippingIcon />, path: "/delivery" },
+  { text: "Vận chuyển Phát hàng", icon: <LocalShippingIcon />, path: "/van-chuyen" },
   { text: "Giao dịch", icon: <PointOfSaleIcon />, path: "/transaction" },
   { text: "Bưu tá", icon: <PersonIcon />, path: "/postman" },
   { text: "Quản trị hệ thống", icon: <AdminPanelSettingsIcon />, path: "/admin" },

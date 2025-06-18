@@ -43,6 +43,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         db: string;
         mabc: string;
     }) => {
+        console.log('AuthContext.login được gọi với token:', data.token);
         setToken(data.token);
         setUserInfo({
             username: data.username,
@@ -54,7 +55,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             ngaykt: data.ngaykt,
             db: data.db
         });
-
+    
+        // Lưu token vào sessionStorage để axios interceptor tự động lấy
         sessionStorage.setItem('token', data.token);
         sessionStorage.setItem('userInfo', JSON.stringify({
             username: data.username,
@@ -67,9 +69,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             db: data.db
         }));
         sessionStorage.setItem('lastActionTime', Date.now().toString());
-
-        // ⚠️ navigate vào Dashboard ngay sau login — giống V0 của bạn
-        navigate('/');
+    
+        // Thêm log kiểm tra
+        console.log('Đã lưu token vào sessionStorage:', sessionStorage.getItem('token'));
+    
+        // navigate vào Dashboard ngay sau login
+        setTimeout(() => {
+          navigate('/');
+        }, 2000); // Đảm bảo lưu xong mới chuyển trang
     };
 
     // 👉 Restore sessionStorage khi khởi động app
