@@ -4,17 +4,18 @@
 import React, { useState } from 'react';
 import {
   Card, CardHeader, CardContent, Table, TableHead, TableRow, TableCell, TableBody,
-  Typography, Pagination, Box, TextField, IconButton, Tooltip, Divider, Button
+  Typography, Pagination, Box, TextField, IconButton, Tooltip, Divider, Button,
+  TableContainer, Paper
 } from '@mui/material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import * as XLSX from 'xlsx';
-import type { SearchE1ResponseDto } from '../types/vanChuyen.types';
+import type { SearchE1ResponseDto, E1Info } from '../types/vanChuyen.types';
 
 interface Props {
   searchResult: SearchE1ResponseDto | undefined;
   isLoading: boolean;
-  onSelectE1: (mae1: string) => void;
+  onSelectE1: (e1Info: E1Info) => void;
   onPageChange: (page: number) => void;
   onExportExcel: () => Promise<SearchE1ResponseDto>;
 }
@@ -34,7 +35,7 @@ const SearchResults: React.FC<Props> = (props) => {
 
   const handleGoToPage = () => {
     const page = parseInt(pageInput);
-    if (page && searchResult && page >= 1 && page <= searchResult.totalPages) {
+    if (page && searchResult && searchResult.totalPages && page >= 1 && page <= searchResult.totalPages) {
       onPageChange(page);
       setPageInput(''); // Reset input sau khi chuyển trang
     }
@@ -47,7 +48,7 @@ const SearchResults: React.FC<Props> = (props) => {
   };
 
   const handleExportExcel = async () => {
-    if (!searchResult?.data.length) return;
+    if (!searchResult?.data?.length) return;
     
     try {
       setIsExporting(true);
@@ -55,7 +56,7 @@ const SearchResults: React.FC<Props> = (props) => {
       const fullData = await onExportExcel();
 
       // Chuẩn bị dữ liệu cho file Excel từ toàn bộ kết quả tìm kiếm
-      const excelData = fullData.data.map((row, index) => ({
+      const excelData = fullData.data?.map((row, index) => ({
         'STT': index + 1,
         'Ngày': row.ngay,
         'Mã E1': row.mae1,
@@ -64,7 +65,7 @@ const SearchResults: React.FC<Props> = (props) => {
         'Mã Bưu cục nhận': row.mabcNhan,
         'Chuyến thư': row.chthu,
         'Túi số': row.tuiso
-      }));
+      })) || [];
 
       // Tạo workbook và worksheet
       const wb = XLSX.utils.book_new();
@@ -86,7 +87,7 @@ const SearchResults: React.FC<Props> = (props) => {
   };
 
   return (
-    <Card sx={{ width: '100%', maxWidth: 400 }}>
+    <Card sx={{ width: '100%' }}>
       <CardHeader 
         title="Kết quả tìm kiếm" 
         sx={{ 
@@ -112,7 +113,7 @@ const SearchResults: React.FC<Props> = (props) => {
                       size="small"
                       startIcon={<FileDownloadIcon />}
                       onClick={handleExportExcel}
-                      disabled={!searchResult.data.length || isExporting}
+                      disabled={!searchResult.data?.length || isExporting}
                     >
                       {isExporting ? 'Đang xuất...' : 'Xuất Excel'}
                     </Button>
@@ -121,98 +122,94 @@ const SearchResults: React.FC<Props> = (props) => {
               </span>
             </Box>
 
-            <Table size="small" sx={{ tableLayout: 'fixed' }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell 
-                    width="30%" 
-                    sx={{ 
-                      borderRight: 1, 
-                      borderColor: 'divider',
-                      fontWeight: 'bold'
-                    }}
-                  >
-                    Ngày
-                  </TableCell>
-                  <TableCell 
-                    width="40%"
-                    sx={{ 
-                      borderRight: 1,
-                      borderColor: 'divider',
-                      fontWeight: 'bold' 
-                    }}
-                  >
-                    Mã E1
-                  </TableCell>
-                  <TableCell 
-                    width="30%"
-                    sx={{ fontWeight: 'bold' }}
-                  >
-                    KL (g)
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {searchResult.data.map((row) => (
-                  <TableRow 
-                    key={row.mae1}
-                    hover
-                    sx={{ 
-                      cursor: 'pointer',
-                      '&:hover': {
-                        backgroundColor: 'action.hover'
-                      }
-                    }}
-                    onClick={() => onSelectE1(row.mae1)}
-                  >
+            <TableContainer component={Paper} elevation={0} variant="outlined">
+              <Table size="small" sx={{ minWidth: 350 }}>
+                <TableHead>
+                  <TableRow>
                     <TableCell 
                       sx={{ 
-                        borderRight: 1, 
-                        borderColor: 'divider',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis'
+                        minWidth: 100,
+                        fontWeight: 'bold'
                       }}
                     >
-                      {row.ngay}
+                      Ngày
                     </TableCell>
-                    <TableCell
-                      sx={{
-                        borderRight: 1,
-                        borderColor: 'divider',
-                        color: 'primary.main',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis'
+                    <TableCell 
+                      sx={{ 
+                        minWidth: 150,
+                        fontWeight: 'bold' 
                       }}
                     >
-                      {row.mae1}
+                      Mã E1
                     </TableCell>
-                    <TableCell
-                      sx={{
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis'
+                    <TableCell 
+                      sx={{ 
+                        minWidth: 80,
+                        fontWeight: 'bold',
+                        textAlign: 'right'
                       }}
                     >
-                      {row.khoiluong}
+                      KL (g)
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHead>
+                <TableBody>
+                  {searchResult.data?.map((row) => (
+                    <TableRow 
+                      key={row.mae1}
+                      hover
+                      sx={{ 
+                        cursor: 'pointer',
+                        '&:last-child td, &:last-child th': { border: 0 } // remove border for the last row
+                      }}
+                      onClick={() => onSelectE1(row)}
+                    >
+                      <TableCell
+                        sx={{
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis'
+                        }}
+                      >
+                        {row.ngay}
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          color: 'primary.main',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis'
+                        }}
+                      >
+                        {row.mae1}
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          textAlign: 'right'
+                        }}
+                      >
+                        {row.khoiluong}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
 
             <Divider sx={{ my: 2 }} />
 
             <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
               <Pagination
-                count={searchResult.totalPages}
-                page={searchResult.currentPage}
+                count={searchResult.totalPages || 1}
+                page={searchResult.currentPage || 1}
                 onChange={(_e, page) => onPageChange(page)}
                 color="primary"
                 size="small"
               />
-              {searchResult.totalPages > 1 && (
+              {searchResult.totalPages && searchResult.totalPages > 1 && (
                 <Box display="flex" alignItems="center" gap={0.5}>
                   <TextField
                     size="small"
@@ -232,7 +229,13 @@ const SearchResults: React.FC<Props> = (props) => {
                         <IconButton 
                           size="small" 
                           onClick={handleGoToPage}
-                          disabled={!pageInput || parseInt(pageInput) < 1 || parseInt(pageInput) > searchResult.totalPages}
+                          disabled={(() => {
+                            if (!pageInput) return true;
+                            const pageNum = parseInt(pageInput);
+                            if (isNaN(pageNum) || pageNum < 1) return true;
+                            if (searchResult.totalPages && pageNum > searchResult.totalPages) return true;
+                            return false;
+                          })()}
                         >
                           <NavigateNextIcon />
                         </IconButton>

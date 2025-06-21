@@ -1,5 +1,5 @@
 import { injectable, inject } from 'tsyringe';
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { SearchE1UseCase } from '../../../application/use-cases/van-chuyen/SearchE1UseCase';
 import { GetE1DetailsUseCase } from '../../../application/use-cases/van-chuyen/GetE1DetailsUseCase';
 import { SearchE1RequestDto } from '../../../application/dto/van-chuyen/SearchE1RequestDto';
@@ -12,27 +12,23 @@ export class E1Controller {
     @inject(GetE1DetailsUseCase) private getE1DetailsUseCase: GetE1DetailsUseCase
   ) {}
 
-  async searchE1(req: Request, res: Response): Promise<void> {
+  async searchE1(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const request = new SearchE1RequestDto();
-      Object.assign(request, req.query);
-      
-      const result = await this.searchE1UseCase.execute(request);
+      const requestDto: SearchE1RequestDto = req.body;
+      const result = await this.searchE1UseCase.execute(requestDto);
       res.json(result);
-    } catch (error: any) {
-      res.status(500).json({ message: error?.message || 'Internal server error' });
+    } catch (error) {
+      next(error);
     }
   }
 
-  async getE1Details(req: Request, res: Response): Promise<void> {
+  async getE1Details(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const request = new GetE1DetailsRequestDto();
-      Object.assign(request, req.query);
-      
-      const result = await this.getE1DetailsUseCase.execute(request);
+      const requestDto: GetE1DetailsRequestDto = req.body;
+      const result = await this.getE1DetailsUseCase.execute(requestDto);
       res.json(result);
-    } catch (error: any) {
-      res.status(500).json({ message: error?.message || 'Internal server error' });
+    } catch (error) {
+      next(error);
     }
   }
 } 

@@ -1,10 +1,10 @@
-import React, { Suspense, lazy } from "react";
+import { Suspense } from "react";
 import { useRoutes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { routes } from "./routes/routes";
 import { PageTitleProvider } from "./context/PageTitleContext";
-
-const LoginPage = lazy(() => import('./pages/LoginPage'));
-const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+import JobNotifier from "./components/JobNotifier/JobNotifier";
 
 const App = () => {
   const element = useRoutes(routes);
@@ -13,6 +13,19 @@ const App = () => {
       <Suspense fallback={<div>Đang tải trang...</div>}>
         {element}
       </Suspense>
+      <JobNotifier />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </PageTitleProvider>
   );
 };

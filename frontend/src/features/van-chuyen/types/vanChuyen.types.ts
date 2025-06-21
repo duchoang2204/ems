@@ -6,36 +6,38 @@ export interface SearchE1RequestDto {
   mabcNhan: string;         // UI: string → DB: mabc (number)
   chthu: string;           // UI: string → DB: number
   tuiso: string;           // UI: string → DB: number
-  khoiluong?: string;      // UI: string → DB: number
-  page?: number;
-  limit?: number;
+  khoiluong: string;
+  page: number;
+  limit: number;
+  isPaging?: boolean;
+  isPolling?: boolean;
+}
+
+export interface E1Info {
+  mae1: string;
+  ngay: string;
+  mabcDong: string;
+  mabcNhan: string;
+  chthu: string;
+  tuiso: string;
+  khoiluong: string;
 }
 
 export interface SearchE1ResponseDto {
-  data: Array<{
-    mae1: string;
-    ngay: string;
-    mabcDong: string;
-    mabcNhan: string;
-    chthu: string;
-    tuiso: string;
-    khoiluong: string;
-  }>;
-  totalCount: number;
-  totalWeight: number;
-  currentPage: number;
-  totalPages: number;
+  status: 'SUCCESS' | 'PENDING' | 'FAILED';
+  message?: string;
+  data?: E1Info[];
+  totalCount?: number;
+  totalWeight?: number;
+  currentPage?: number;
+  totalPages?: number;
 }
 
 // DTO GetE1Details
 export interface GetE1DetailsRequestDto {
   mae1: string;
-  fromDate: Date | null;    // UI: DatePicker → API: string YYYYMMDD
-  toDate: Date | null;      // UI: DatePicker → API: string YYYYMMDD
-  mabcDong: string;         // UI: string → DB: mabc_kt (number)
-  mabcNhan: string;         // UI: string → DB: mabc (number)
-  chthu: string;           // UI: string → DB: number
-  tuiso: string;           // UI: string → DB: number
+  fromDate: Date | null;
+  toDate: Date | null;
 }
 
 export interface GetE1DetailsResponseDto {
@@ -46,14 +48,11 @@ export interface GetE1DetailsResponseDto {
 // SQL Server Entities - giữ nguyên interface
 export interface E1DetailInfo {
   stt: number;
-  ngayCT: string;
-  gioCT: string;        // Đổi tên từ gioDongCT sang gioCT
+  eventTimestamp: string; // ISO 8601 date string from backend
+  loai: string;
   buuCucDong: string;
   buuCucNhan: string;
   thongTinCT: string;
-  isSpecialTable: boolean;  // Bắt buộc phải có
-  tableType: 'LIEN_TINH' | 'NOI_TINH';
-  direction: 'DEN' | 'DI';
 }
 
 export interface E1BD10Info {
@@ -150,8 +149,8 @@ export interface E1DetailBase {
 // Thông tin đã được format để hiển thị
 export interface E1DetailInfo {
   stt: number;
-  ngayCT: string;
-  gioCT: string;
+  eventTimestamp: string; // ISO 8601 date string from backend
+  loai: string;
   buuCucDong: string;
   buuCucNhan: string;
   thongTinCT: string;

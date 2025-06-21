@@ -1,5 +1,5 @@
 // src/components/Header.tsx
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { 
   AppBar, 
   Toolbar, 
@@ -17,9 +17,12 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import InfoIcon from "@mui/icons-material/Info";
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { usePageTitle } from "../hooks/usePageTitle";
+import NotificationBell from "./NotificationBell";
+import { useBackgroundJobsStore } from "../stores/backgroundJobsStore";
 
 export default function Header() {
   const { userInfo, logout } = useAuth();
@@ -27,6 +30,11 @@ export default function Header() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
+  const jobs = useBackgroundJobsStore((state) => state.jobs);
+  const hasFailedJobs = useMemo(() => {
+    return Array.from(jobs.values()).some(job => job.status === 'failed');
+  }, [jobs]);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -81,6 +89,16 @@ export default function Header() {
           <Typography variant="body2" color="inherit" sx={{ mr: 2 }}>
             {getDbName(userInfo?.mabc || "")}
           </Typography>
+
+          {hasFailedJobs && (
+            <Tooltip title="Có lỗi đồng bộ">
+              <IconButton color="inherit">
+                <ErrorOutlineIcon sx={{ color: 'error.main' }} />
+              </IconButton>
+            </Tooltip>
+          )}
+
+          <NotificationBell />
 
           <Tooltip title="Tài khoản">
             <IconButton

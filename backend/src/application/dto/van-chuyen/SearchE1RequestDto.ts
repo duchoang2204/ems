@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty, IsNumber, IsBoolean } from 'class-validator';
 
 export class SearchE1RequestDto {
   @IsString()
@@ -36,4 +36,8 @@ export class SearchE1RequestDto {
   @IsNumber()
   @IsOptional()
   limit?: number;
+
+  @IsBoolean()
+  @IsOptional()
+  isPolling?: boolean;
 } 

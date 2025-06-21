@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PosEntity } from '../../shared/pos/pos.entity';
+import { IPosRepository } from '../../shared/pos/pos.repository.interface';
 
 @Injectable()
 export class PosNameService {
@@ -9,7 +10,9 @@ export class PosNameService {
 
     constructor(
         @InjectRepository(PosEntity)
-        private readonly posRepository: Repository<PosEntity>
+        private readonly posRepository: Repository<PosEntity>,
+        @InjectRepository(IPosRepository)
+        private readonly posRepositoryInterface: IPosRepository
     ) {}
 
     async getPosName(posCode: string): Promise<string> {
@@ -33,6 +36,19 @@ export class PosNameService {
         // Lưu vào cache và trả về tên
         this.posNameCache.set(posCode, pos.POSName);
         return pos.POSName;
+    }
+
+    async getPosNames(posCodes: string[]): Promise<Record<string, string>> {
+        const uniquePosCodes = [...new Set(posCodes)];
+        const namesMap: Record<string, string> = {};
+        
+        const promises = uniquePosCodes.map(async (code) => {
+            const name = await this.getPosName(code);
+            namesMap[code] = name;
+        });
+
+        await Promise.all(promises);
+        return namesMap;
     }
 
     async clearCache(): Promise<void> {

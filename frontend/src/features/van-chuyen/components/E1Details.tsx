@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Card, CardHeader, CardContent, Table, TableHead, TableRow, TableCell, TableBody,
-  Typography, Paper, Divider, Chip, Box
+  Typography, Paper, Divider, Box
 } from '@mui/material';
-import CallReceivedIcon from '@mui/icons-material/CallReceived';
-import CallMadeIcon from '@mui/icons-material/CallMade';
+import { format as formatDate } from 'date-fns';
 import type { E1DetailInfo, E1BD10Info } from '../types/vanChuyen.types';
+import { usePosNames } from '../../../hooks/usePosNames';
 
 interface Props {
   selectedE1: string | null;
@@ -17,23 +17,62 @@ interface Props {
 const E1Details: React.FC<Props> = (props) => {
   const { selectedE1, e1Details, bd10Details, isLoading } = props;
 
-  const getDirectionIcon = (direction: 'DEN' | 'DI') => {
-    return direction === 'DEN' ? (
-      <CallReceivedIcon fontSize="small" color="success" />
-    ) : (
-      <CallMadeIcon fontSize="small" color="primary" />
-    );
+  const sortedE1Details = useMemo(() => {
+    if (!e1Details) return [];
+    // Sắp xếp dựa trên chuỗi ISO 8601, không cần parse phức tạp
+    return [...e1Details].sort((a, b) => a.eventTimestamp.localeCompare(b.eventTimestamp));
+  }, [e1Details]);
+
+  const posCodesToFetch = useMemo(() => {
+    // Phải dùng e1Details gốc, không phải sortedE1Details để tránh lặp lại useMemo
+    return e1Details.flatMap(detail => [detail.buuCucDong, detail.buuCucNhan]);
+  }, [e1Details]);
+
+  const { posNames } = usePosNames(posCodesToFetch);
+
+  const getRowStyle = (loai: string) => {
+    // HNLT: 100916
+    if (loai.includes('(HNLT)')) {
+      return { backgroundColor: '#fff3e0' }; // Material UI Orange 50
+    }
+    // HNNT: 101000
+    if (loai.includes('(HNNT)')) {
+      return { backgroundColor: '#fffde7' }; // Material UI Yellow 50 (nhạt hơn)
+    }
+    // Mặc định cho HCM, Quá Giang, etc.
+    return {};
   };
 
-  const getTableTypeChip = (type: 'LIEN_TINH' | 'NOI_TINH', isSpecial: boolean) => {
-    return (
-      <Chip
-        size="small"
-        label={type === 'LIEN_TINH' ? 'Liên Tỉnh' : 'Nội Tỉnh'}
-        color={isSpecial ? 'secondary' : 'default'}
-        variant={isSpecial ? 'filled' : 'outlined'}
-      />
-    );
+  const getTypeStyle = (loai: string) => {
+    // Chỉ áp dụng màu sắc, không thay đổi font weight để đồng bộ.
+    if (loai.startsWith('Đi')) {
+      return { color: 'success.main' }; // Green
+    }
+    if (loai.startsWith('XNĐ')) {
+      return { color: 'error.main' }; // Red
+    }
+    if (loai.startsWith('Đến')) {
+      return { color: 'warning.dark' }; // Orange/Amber
+    }
+    return {};
+  };
+
+  const headerCellStyle = {
+    backgroundColor: '#343a40',
+    color: '#ffffff',
+    fontWeight: 'bold',
+    border: `1px solid #495057`,
+    textAlign: 'center',
+    padding: '12px 16px',
+    verticalAlign: 'middle',
+  };
+
+  const bodyCellStyle = {
+    color: '#212529',
+    border: `1px solid #868e96`,
+    padding: '12px 16px',
+    textAlign: 'center',
+    verticalAlign: 'middle',
   };
 
   if (!selectedE1) {
@@ -70,33 +109,53 @@ const E1Details: React.FC<Props> = (props) => {
               <Typography variant="h6" gutterBottom>
                 Thông tin chuyến thư
               </Typography>
-              <Table size="small">
+              <Table size="small" sx={{ borderCollapse: 'collapse' }}>
                 <TableHead>
                   <TableRow>
-                    <TableCell>STT</TableCell>
-                    <TableCell>Ngày CT</TableCell>
-                    <TableCell>Giờ CT</TableCell>
-                    <TableCell>Bưu cục đóng</TableCell>
-                    <TableCell>Bưu cục nhận</TableCell>
-                    <TableCell>Thông tin CT</TableCell>
-                    <TableCell align="center">Loại</TableCell>
+                    <TableCell sx={headerCellStyle}>STT</TableCell>
+                    <TableCell sx={headerCellStyle}>Thời gian CT</TableCell>
+                    <TableCell sx={headerCellStyle}>Trạng thái</TableCell>
+                    <TableCell sx={headerCellStyle}>Bưu cục đóng</TableCell>
+                    <TableCell sx={headerCellStyle}>Bưu cục nhận</TableCell>
+                    <TableCell sx={headerCellStyle}>Thông tin CT</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {e1Details.map((detail) => (
-                    <TableRow key={detail.stt}>
-                      <TableCell>{detail.stt}</TableCell>
-                      <TableCell>{detail.ngayCT}</TableCell>
-                      <TableCell>{detail.gioCT}</TableCell>
-                      <TableCell>{detail.buuCucDong}</TableCell>
-                      <TableCell>{detail.buuCucNhan}</TableCell>
-                      <TableCell>{detail.thongTinCT}</TableCell>
-                      <TableCell align="center">
-                        <Box display="flex" alignItems="center" gap={1} justifyContent="center">
-                          {getDirectionIcon(detail.direction)}
-                          {getTableTypeChip(detail.tableType, detail.isSpecialTable)}
+                  {sortedE1Details.map((detail) => (
+                    <TableRow 
+                      key={detail.stt}
+                      sx={getRowStyle(detail.loai)}
+                    >
+                      <TableCell sx={bodyCellStyle}>{detail.stt}</TableCell>
+                      <TableCell sx={bodyCellStyle}>
+                        {formatDate(new Date(detail.eventTimestamp), 'dd/MM/yyyy HH:mm')}
+                      </TableCell>
+                      <TableCell sx={{ ...bodyCellStyle }}>
+                        <Typography component="span" sx={getTypeStyle(detail.loai)}>
+                          {detail.loai}
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={bodyCellStyle}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <Typography variant="body2">{detail.buuCucDong}</Typography>
+                          {posNames[detail.buuCucDong] && (
+                            <Typography variant="caption">
+                              {posNames[detail.buuCucDong]}
+                            </Typography>
+                          )}
                         </Box>
                       </TableCell>
+                      <TableCell sx={bodyCellStyle}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <Typography variant="body2">{detail.buuCucNhan}</Typography>
+                          {posNames[detail.buuCucNhan] && (
+                            <Typography variant="caption">
+                              {posNames[detail.buuCucNhan]}
+                            </Typography>
+                          )}
+                        </Box>
+                      </TableCell>
+                      <TableCell sx={{...bodyCellStyle, textAlign: 'left' }}>{detail.thongTinCT}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -110,26 +169,29 @@ const E1Details: React.FC<Props> = (props) => {
               <Typography variant="h6" gutterBottom>
                 Thông tin giao nhận BD10
               </Typography>
-              <Table size="small">
+              <Table size="small" sx={{ borderCollapse: 'collapse' }}>
                 <TableHead>
                   <TableRow>
-                    <TableCell>STT</TableCell>
-                    <TableCell>Ngày BD10</TableCell>
-                    <TableCell>Ngày xác nhận đi</TableCell>
-                    <TableCell>Bưu cục giao</TableCell>
-                    <TableCell>Bưu cục nhận</TableCell>
-                    <TableCell>Lần lập/Mã BD10</TableCell>
+                    <TableCell sx={headerCellStyle}>STT</TableCell>
+                    <TableCell sx={headerCellStyle}>Ngày BĐ10</TableCell>
+                    <TableCell sx={headerCellStyle}>Thời gian BĐ10</TableCell>
+                    <TableCell sx={headerCellStyle}>Trạng thái</TableCell>
+                    <TableCell sx={headerCellStyle}>Bưu cục giao</TableCell>
+                    <TableCell sx={headerCellStyle}>Bưu cục nhận</TableCell>
+                    <TableCell sx={headerCellStyle}>Lần lập/Mã BĐ10</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
+                  {/* Dữ liệu mẫu - sẽ được thay thế khi có API */}
                   {bd10Details.map((detail) => (
                     <TableRow key={detail.stt}>
-                      <TableCell>{detail.stt}</TableCell>
-                      <TableCell>{detail.ngayBD10}</TableCell>
-                      <TableCell>{detail.ngayXacNhanDi}</TableCell>
-                      <TableCell>{detail.buuCucGiao}</TableCell>
-                      <TableCell>{detail.buuCucNhan}</TableCell>
-                      <TableCell>{detail.lanLapMaBD10}</TableCell>
+                      <TableCell sx={bodyCellStyle}>{detail.stt}</TableCell>
+                      <TableCell sx={bodyCellStyle}>{detail.ngayBD10}</TableCell>
+                      <TableCell sx={bodyCellStyle}>{/* Thời gian BĐ10 */}</TableCell>
+                      <TableCell sx={bodyCellStyle}>{/* Trạng thái */}</TableCell>
+                      <TableCell sx={bodyCellStyle}>{detail.buuCucGiao}</TableCell>
+                      <TableCell sx={bodyCellStyle}>{detail.buuCucNhan}</TableCell>
+                      <TableCell sx={bodyCellStyle}>{detail.lanLapMaBD10}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

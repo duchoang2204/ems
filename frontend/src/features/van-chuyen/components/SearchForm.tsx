@@ -2,7 +2,7 @@
 // Dùng Form → parent component truyền props: onSearch()
 
 import React from 'react';
-import { Grid, TextField, Button } from '@mui/material';
+import { TextField, Button, Stack } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'; 
 
@@ -50,125 +50,109 @@ const SearchForm: React.FC<Props> = (props) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={6} md={3}>
-          <DatePicker
-            label="Từ ngày"
-            value={fromDate}
-            onChange={(value) => onChangeField('fromDate', value)}
-            slotProps={{
-              textField: {
-                fullWidth: true, 
-                size: 'small',
-                autoComplete: 'from-date'
-              }
-            }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <DatePicker
-            label="Đến ngày"
-            value={toDate}
-            onChange={(value) => onChangeField('toDate', value)}
-            slotProps={{
-              textField: {
-                fullWidth: true, 
-                size: 'small',
-                autoComplete: 'to-date'
-              }
-            }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <TextField
-            label="Mã bưu cục đóng"
-            value={mabcDong || ''}
-            onChange={(e) => handleNumberInput('mabcDong', e.target.value)}
-            inputProps={{ 
-              inputMode: 'numeric', 
-              pattern: '[0-9]*',
-              'data-field': 'mabc-dong'
-            }}
-            fullWidth
-            size="small"
-            autoComplete="postal-code-from"
-            name="mabc-dong"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <TextField
-            label="Mã bưu cục nhận"
-            value={mabcNhan || ''}
-            onChange={(e) => handleNumberInput('mabcNhan', e.target.value)}
-            inputProps={{ 
-              inputMode: 'numeric', 
-              pattern: '[0-9]*',
-              'data-field': 'mabc-nhan'
-            }}
-            fullWidth
-            size="small"
-            autoComplete="postal-code-to"
-            name="mabc-nhan"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <TextField
-            label="Chuyến thư"
-            value={chthu || ''}
-            onChange={(e) => handleNumberInput('chthu', e.target.value)}
-            inputProps={{ 
-              inputMode: 'numeric', 
-              pattern: '[0-9]*',
-              'data-field': 'chuyen-thu'
-            }}
-            fullWidth
-            size="small"
-            autoComplete="mail-trip"
-            name="chuyen-thu"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <TextField
-            label="Túi số"
-            value={tuiso || ''}
-            onChange={(e) => handleNumberInput('tuiso', e.target.value)}
-            inputProps={{ 
-              inputMode: 'numeric', 
-              pattern: '[0-9]*',
-              'data-field': 'tui-so'
-            }}
-            fullWidth
-            size="small"
-            autoComplete="bag-number"
-            name="tui-so"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <TextField
-            label="Khối lượng"
-            value={khoiluong || ''}
-            onChange={(e) => handleNumberInput('khoiluong', e.target.value)}
-            inputProps={{ 
-              inputMode: 'decimal', 
-              step: "0.1",
-              'data-field': 'khoi-luong'
-            }}
-            fullWidth
-            size="small"
-            autoComplete="weight"
-            name="khoi-luong"
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Button
-            variant="contained"
-            onClick={onSearch} 
-            disabled={isLoading || !canSearch()}
-          >
-            {isLoading ? 'Đang tìm kiếm...' : 'Tìm kiếm'}
-          </Button>
-        </Grid>
-      </Grid>
+      <Stack direction="row" spacing={1.5} alignItems="center">
+        <TextField
+          label="Mã bưu cục đóng"
+          name="mabcDong"
+          value={mabcDong || ''}
+          onChange={(e) => handleNumberInput('mabcDong', e.target.value)}
+          disabled={isLoading}
+          inputProps={{ 
+            inputMode: 'numeric', 
+            pattern: '[0-9]*',
+          }}
+          size="small"
+          autoFocus
+          sx={{ minWidth: 140, flex: 1 }}
+        />
+        <TextField
+          label="Mã bưu cục nhận"
+          name="mabcNhan"
+          value={mabcNhan || ''}
+          onChange={(e) => handleNumberInput('mabcNhan', e.target.value)}
+          disabled={isLoading}
+          inputProps={{ 
+            inputMode: 'numeric', 
+            pattern: '[0-9]*',
+          }}
+          size="small"
+          sx={{ minWidth: 140, flex: 1 }}
+        />
+        <TextField
+          label="Chuyến thư"
+          name="chthu"
+          value={chthu || ''}
+          onChange={(e) => handleNumberInput('chthu', e.target.value)}
+          disabled={isLoading}
+          inputProps={{ 
+            inputMode: 'numeric', 
+            pattern: '[0-9]*',
+          }}
+          size="small"
+          sx={{ minWidth: 100, flex: 0.8 }}
+        />
+        <TextField
+          label="Túi số"
+          name="tuiso"
+          value={tuiso || ''}
+          onChange={(e) => handleNumberInput('tuiso', e.target.value)}
+          disabled={isLoading}
+          inputProps={{ 
+            inputMode: 'numeric', 
+            pattern: '[0-9]*',
+          }}
+          size="small"
+          sx={{ minWidth: 100, flex: 0.8 }}
+        />
+        <TextField
+          label="Khối lượng"
+          name="khoiluong"
+          value={khoiluong || ''}
+          onChange={(e) => handleNumberInput('khoiluong', e.target.value)}
+          disabled={isLoading}
+          inputProps={{ 
+            inputMode: 'decimal', 
+            step: "0.1",
+          }}
+          size="small"
+          sx={{ minWidth: 100, flex: 0.8 }}
+        />
+        <DatePicker
+          label="Từ ngày"
+          value={fromDate}
+          onChange={(value) => onChangeField('fromDate', value)}
+          disabled={isLoading}
+          slotProps={{
+            textField: {
+              size: 'small',
+            }
+          }}
+          sx={{ minWidth: 160, flex: 1 }}
+        />
+        <DatePicker
+          label="Đến ngày"
+          value={toDate}
+          onChange={(value) => onChangeField('toDate', value)}
+          disabled={isLoading}
+          slotProps={{
+            textField: {
+              size: 'small',
+            }
+          }}
+          sx={{ minWidth: 160, flex: 1 }}
+        />
+        <Button
+          variant="contained"
+          onClick={onSearch} 
+          disabled={isLoading || !canSearch()}
+          sx={{
+            height: '40px', // Đồng bộ chiều cao với TextField size='small'
+            flexShrink: 0,
+          }}
+        >
+          {isLoading ? 'Đang tìm...' : 'Tìm kiếm'}
+        </Button>
+      </Stack>
     </LocalizationProvider>
   );
 };

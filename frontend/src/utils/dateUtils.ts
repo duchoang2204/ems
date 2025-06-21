@@ -1,18 +1,18 @@
 // Các hàm tiện ích xử lý ngày tháng
 
 /**
- * Chuyển đổi từ Date object sang string format YYYYMMDD
- * @param date Date object từ DatePicker
- * @returns string format YYYYMMDD hoặc undefined nếu date là null
+ * Định dạng đối tượng Date thành chuỗi 'YYYYMMDD'.
+ * @param date Đối tượng Date cần định dạng.
+ * @returns Chuỗi có định dạng 'YYYYMMDD' hoặc chuỗi rỗng nếu đầu vào không hợp lệ.
  */
-export const formatDateToYyyymmdd = (date: Date | null): string | undefined => {
-    if (!date) return undefined;
-    
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    
-    return `${year}${month}${day}`;
+export const formatDateToYyyymmdd = (date: Date): string => {
+  if (!(date instanceof Date) || isNaN(date.getTime())) {
+    return '';
+  }
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}${month}${day}`;
 };
 
 /**
@@ -44,4 +44,34 @@ export const parseYyyymmddToDate = (dateStr: string): Date | null => {
     
     const date = new Date(year, month, day);
     return date;
+};
+
+/**
+ * Chuyển đổi chuỗi ngày có định dạng 'DD/MM/YYYY' thành đối tượng Date.
+ * @param dateString Chuỗi ngày cần chuyển đổi.
+ * @returns Đối tượng Date hoặc null nếu chuỗi không hợp lệ.
+ */
+export const parseDdMmYyyy = (dateString: string): Date | null => {
+  if (!dateString || typeof dateString !== 'string') {
+    return null;
+  }
+  const parts = dateString.split('/');
+  if (parts.length !== 3) {
+    return null;
+  }
+  const day = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10) - 1; // Tháng trong JS là từ 0-11
+  const year = parseInt(parts[2], 10);
+  
+  if (isNaN(day) || isNaN(month) || isNaN(year)) {
+    return null;
+  }
+  
+  const date = new Date(year, month, day);
+  // Kiểm tra xem ngày có hợp lệ không (ví dụ: không phải ngày 32/13/2023)
+  if (date.getFullYear() === year && date.getMonth() === month && date.getDate() === day) {
+    return date;
+  }
+  
+  return null;
 };

@@ -3,6 +3,7 @@ import { IShiftRepository } from '../../domain/repositories/shift.repository.int
 import { Shift } from '../../domain/entities/shift.entity';
 import { getConnectionByMaBC } from '../../../../config/database/db.config';
 import oracledb from 'oracledb';
+import { logger } from '../../../../core/utils/logger.util';
 
 interface OracleShift {
   NGAY: number;
@@ -31,6 +32,7 @@ export class OracleShiftRepository implements IShiftRepository {
   async findCurrentShift(g_mabc: string): Promise<Shift | null> {
     let conn;
     try {
+      logger.info(`[SHIFT][Repo] findCurrentShift input: g_mabc=${g_mabc}`);
       conn = await getConnectionByMaBC(g_mabc);
       const result = await conn.execute(
         `BEGIN
@@ -45,8 +47,14 @@ export class OracleShiftRepository implements IShiftRepository {
 
       const outBinds = result.outBinds as { [key: string]: any };
       if (outBinds.p_error) {
-        console.error('Lỗi từ SP:', outBinds.p_error);
-        throw new Error(outBinds.p_error);
+        logger.error(`[SHIFT][Repo] Lỗi từ SP: ${outBinds.p_error}`);
+        if (outBinds.p_error === 'INVALID_G_MABC') {
+          throw new Error('INVALID_G_MABC');
+        }
+        if (outBinds.p_error === 'NO_SHIFT_FOUND') {
+          throw new Error('NO_SHIFT_FOUND');
+        }
+        throw new Error('SHIFT_SYSTEM_ERROR');
       }
 
       const resultSet = outBinds.p_shift as oracledb.ResultSet<any>;
@@ -54,8 +62,8 @@ export class OracleShiftRepository implements IShiftRepository {
       await resultSet.close();
 
       if (!row) {
-        console.error('Không có ca trực nào được trả về từ SP');
-        return null;
+        logger.error('[SHIFT][Repo] Không có ca trực nào được trả về từ SP');
+        throw new Error('NO_SHIFT_FOUND');
       }
 
       const shift = row as OracleShift;
@@ -74,8 +82,8 @@ export class OracleShiftRepository implements IShiftRepository {
         shift.DATE_LOG,
         shift.ID_CA
       );
-    } catch (err) {
-      console.error('Lỗi khi gọi SP check ca:', err);
+    } catch (err: any) {
+      logger.error(`[SHIFT][Repo] Lỗi khi gọi SP check ca: ${err.message}`);
       throw err;
     } finally {
       if (conn) await conn.close();

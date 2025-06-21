@@ -40,26 +40,23 @@ const dbConfigMap: { [key: string]: ConnectionAttributes } = {
 };
 
 /**
- * Lấy connection theo mã bưu cục
+ * Lấy connection theo mã bưu cục từ pool
  * @param mabc Mã bưu cục
  * @returns Oracle connection
- * @throws Error nếu mã bưu cục không hợp lệ hoặc không thể kết nối
+ * @throws Error nếu mã bưu cục không hợp lệ hoặc pool chưa khởi tạo
  */
 export async function getConnectionByMaBC(mabc: string) {
-  const dbConfig = dbConfigMap[mabc];
-  if (!dbConfig) {
-    throw new Error("Mã bưu cục không hợp lệ!");
+  let poolAlias = '';
+  switch (mabc) {
+    case '100916': poolAlias = 'HNLT'; break;
+    case '101000': poolAlias = 'HNNT'; break;
+    case '700916': poolAlias = 'HCMLT'; break;
+    default: throw new Error('Mã bưu cục không hợp lệ!');
   }
-
-  // Kiểm tra thông tin kết nối
-  if (!dbConfig.user || !dbConfig.password || !dbConfig.connectString) {
-    throw new Error("Thiếu thông tin kết nối database!");
-  }
-
   try {
-    return await oracledb.getConnection(dbConfig);
+    return await oracledb.getConnection(poolAlias);
   } catch (err: any) {
-    console.error("Lỗi kết nối database:", err.message);
-    throw new Error("Không thể kết nối đến database!");
+    console.error('Lỗi lấy connection từ pool:', err.message);
+    throw new Error('Không thể lấy connection từ pool!');
   }
 } 
