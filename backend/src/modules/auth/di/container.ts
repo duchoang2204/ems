@@ -9,6 +9,4 @@ import { JwtTokenService } from '../services/implementations/jwt-token.service';
 container.registerSingleton(AUTH_TOKENS.LoginUseCase, LoginUseCase);
 container.registerSingleton(AUTH_TOKENS.AuthService, AuthService);
 container.registerSingleton(AUTH_TOKENS.AuthRepository, OracleUserRepository);
-container.registerSingleton(AUTH_TOKENS.JwtTokenService, JwtTokenService);
-// Đăng ký thêm token 'UserRepository' cho OracleUserRepository
-container.registerSingleton('UserRepository', OracleUserRepository); 
+container.registerSingleton(AUTH_TOKENS.JwtTokenService, JwtTokenService); 

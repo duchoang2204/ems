@@ -5,14 +5,14 @@ import { AuthService } from '../services/implementations/auth.service';
 import { IUserRepository } from '../domain/repositories/auth.repository.interface';
 import { JwtTokenService } from '../services/implementations/jwt-token.service';
 import { User } from '../domain/entities/user.entity';
-
+import { AUTH_TOKENS } from '../di/tokens';
 
 @injectable()
 export class LoginUseCase {
   constructor(
-    @inject(AuthService) private authService: AuthService,
-    @inject('UserRepository') private userRepository: IUserRepository,
-    @inject(JwtTokenService) private jwtTokenService: JwtTokenService
+    @inject(AUTH_TOKENS.AuthService) private authService: AuthService,
+    @inject(AUTH_TOKENS.AuthRepository) private userRepository: IUserRepository,
+    @inject(AUTH_TOKENS.JwtTokenService) private jwtTokenService: JwtTokenService
   ) {}
   
   async execute(request: LoginRequestDto): Promise<LoginResponseDto> {

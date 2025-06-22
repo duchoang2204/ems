@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
 import { injectable, inject } from 'tsyringe';
 import { LoginUseCase } from '../usecases/login.usecase';
+import { AUTH_TOKENS } from '../di/tokens';
 
 @injectable()
 export class AuthController {
   constructor(
-    @inject('LoginUseCase')
+    @inject(AUTH_TOKENS.LoginUseCase)
     private loginUseCase: LoginUseCase
   ) {}
 

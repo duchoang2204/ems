@@ -1,5 +1,5 @@
 import oracledb from 'oracledb';
-import { dbConfigHNLT, dbConfigHNNT, dbConfigHCMLT } from '../config/database/db.config';
+import { dbConfigHNLT, dbConfigHNNT, dbConfigHCMLT } from '../../config/database/db.config';
 
 /**
  * Lấy connection theo tên database

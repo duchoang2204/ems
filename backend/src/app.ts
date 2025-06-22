@@ -1,4 +1,3 @@
-import './config/tsyringe.container';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -6,8 +5,7 @@ import { json, urlencoded } from 'express';
 import shiftRoutes from './modules/shift/routes/shift.routes';
 import { errorMiddleware } from './core/middleware/error.middleware';
 import authRoutes from './modules/auth/routes/auth.routes';
-import e1Routes from './routes/van-chuyen/e1.routes';
-import posRouter from './routes/pos.routes';
+import vanChuyenRoutes from './modules/van-chuyen/routes/van-chuyen.routes';
 import loggingMiddleware from './core/middleware/logging.middleware';
 
 const app = express();
@@ -41,8 +39,7 @@ app.use(loggingMiddleware);
 // Register Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/shift', shiftRoutes);
-app.use('/api/van-chuyen/e1', e1Routes);
-app.use('/api/pos', posRouter);
+app.use('/api/van-chuyen', vanChuyenRoutes);
 
 // Global Error Handler
 app.use(errorMiddleware);

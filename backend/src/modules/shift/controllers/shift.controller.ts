@@ -1,10 +1,14 @@
 import { Request, Response } from 'express';
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 import { CheckCurrentShiftUseCase } from '../usecases/check-current-shift.usecase';
+import { SHIFT_TOKENS } from '../di/tokens';
 
 @injectable()
 export class ShiftController {
-  constructor(private checkCurrentShiftUseCase: CheckCurrentShiftUseCase) {}
+  constructor(
+    @inject(SHIFT_TOKENS.CheckCurrentShiftUseCase) 
+    private checkCurrentShiftUseCase: CheckCurrentShiftUseCase
+  ) {}
 
   async checkCurrentShift(req: Request, res: Response) {
     try {      

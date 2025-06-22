@@ -1,10 +1,11 @@
 import { injectable, inject } from 'tsyringe';
 import { ShiftService, CheckShiftResult } from '../services/shift.service';
+import { SHIFT_TOKENS } from '../di/tokens';
 
 @injectable()
 export class CheckCurrentShiftUseCase {
   constructor(
-    @inject(ShiftService) private shiftService: ShiftService
+    @inject(SHIFT_TOKENS.ShiftService) private shiftService: ShiftService
   ) {}
 
   async execute(g_mabc: string): Promise<CheckShiftResult> {

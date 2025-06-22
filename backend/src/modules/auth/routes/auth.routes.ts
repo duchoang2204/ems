@@ -1,3 +1,4 @@
+import '../di/container';
 import { Router } from 'express';
 import { container } from 'tsyringe';
 import { AuthController } from '../controllers/auth.controller';

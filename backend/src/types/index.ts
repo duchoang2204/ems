@@ -15,4 +15,4 @@ export * from './E2E1DS';
 export * from './E2I1';
 export * from './nvien.interface';
 export * from './shift.interface';
-export * from './e1Search.types';
+// export * from './e1Search.types';
